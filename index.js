@@ -22,7 +22,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-
     const bookingsCollection = client.db("tablebooking").collection("bookings");
 
     app.post("/create-booking", async (req, res) => {
@@ -32,9 +31,9 @@ async function run() {
     });
 
     app.get("/available-timeslots", async (req, res) => {
-      const { date } = req.query; 
+      const { date } = req.query;
       const existingBookings = await bookingsCollection
-        .find({ date }) 
+        .find({ date })
         .toArray();
 
       const allTimes = [
@@ -54,7 +53,7 @@ async function run() {
         "23:00",
       ];
 
-      const bookedTimes = existingBookings.map((booking) => booking.time); 
+      const bookedTimes = existingBookings.map((booking) => booking.time);
 
       const availableTimes = allTimes.filter(
         (time) => !bookedTimes.includes(time)
@@ -65,6 +64,13 @@ async function run() {
 
     app.get("/bookings", async (req, res) => {
       const result = await bookingsCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.delete("/bookings/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await bookingsCollection.deleteOne(query);
       res.send(result);
     });
   } finally {

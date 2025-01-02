@@ -23,6 +23,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     const bookingsCollection = client.db("tablebooking").collection("bookings");
+    const menuCollection = client.db("tablebooking").collection("menu");
 
     app.post("/create-booking", async (req, res) => {
       const newBooking = req.body;
@@ -71,6 +72,11 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await bookingsCollection.deleteOne(query);
+      res.send(result);
+    });
+
+    app.get("/menu", async (req, res) => {
+      const result = await menuCollection.find().toArray();
       res.send(result);
     });
   } finally {
